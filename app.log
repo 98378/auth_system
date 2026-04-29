@@ -1,0 +1,6 @@
+2026-04-30 02:15:38,442 - INFO - Database initialized successfully
+2026-04-30 02:15:38,444 - INFO - Blueprints registered successfully
+2026-04-30 02:15:38,445 - INFO - Starting Flask application on http://127.0.0.1:5000
+2026-04-30 02:15:38,454 - WARNING -  * Debugger is active!
+2026-04-30 02:15:38,457 - INFO -  * Debugger PIN: 105-159-991
+2026-04-30 02:15:45,515 - INFO -  * Detected change in 'C:\\Users\\toqar\\Downloads\\data_integrity_auth\\app.py', reloading
