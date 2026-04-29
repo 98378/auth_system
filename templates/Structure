@@ -1,0 +1,28 @@
+data_integrity_auth/
+│
+├── models/
+│   └── user_model.py
+│
+├── routes/
+│   ├── auth_routes.py
+│   └── protected_routes.py
+│
+├── utils/
+│   └── auth_utils.py
+│
+├── templates/
+│   ├── register.html
+│   ├── login.html
+│   ├── setup_2fa.html
+│   ├── verify_2fa.html
+│   ├── dashboard.html
+│   ├── profile.html
+│   ├── admin.html
+│   ├── manager.html
+│   └── user.html
+│
+├── .gitignore
+├── app.py
+├── config.py
+├── db.py
+└── requirements.txt
