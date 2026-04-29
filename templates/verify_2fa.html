@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>2FA Verification</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; justify-content: center; align-items: center; }
+        .container { background: white; border-radius: 10px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); width: 400px; padding: 40px; text-align: center; }
+        input { width: 100%; padding: 12px; margin: 20px 0; border: 1px solid #ddd; border-radius: 5px; font-size: 16px; text-align: center; letter-spacing: 5px; }
+        button { width: 100%; padding: 12px; background: #667eea; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; }
+        h2 { color: #333; margin-bottom: 20px; }
+        p { color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🔐 Two-Factor Authentication</h2>
+        <p>Enter the 6-digit code from Google Authenticator</p>
+        <form id="verifyForm">
+            <input type="text" id="code" placeholder="000000" maxlength="6" required>
+            <button type="submit">Verify & Login</button>
+        </form>
+    </div>
+    <script>
+        document.getElementById('verifyForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const response = await fetch('/api/auth/verify-2fa', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({code: document.getElementById('code').value})
+            });
+            const data = await response.json();
+            if (response.ok) {
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                window.location.href = '/dashboard-page';
+            } else {
+                alert('Error: ' + data.error);
+            }
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register - Auth System</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; justify-content: center; align-items: center; }
+        .container { background: white; border-radius: 10px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); width: 480px; padding: 40px; }
+        h2 { text-align: center; margin-bottom: 30px; color: #333; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 5px; font-size: 16px; }
+        button { width: 100%; padding: 12px; background: #667eea; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; margin-top: 10px; }
+        button:hover { background: #5a67d8; }
+        .password-requirements { background: #f8f9fa; padding: 12px; border-radius: 8px; margin: 10px 0; font-size: 12px; }
+        .password-requirements h4 { margin-bottom: 8px; color: #333; }
+        .password-requirements ul { margin-left: 20px; color: #666; }
+        .password-requirements li.valid { color: #28a745; list-style-type: "✓ "; }
+        .password-requirements li.invalid { color: #dc3545; list-style-type: "✗ "; }
+        .error-message { color: #dc3545; font-size: 14px; margin-top: 5px; display: none; }
+        .qr-section { text-align: center; margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 10px; }
+        .hidden { display: none; }
+        .login-link { text-align: center; margin-top: 20px; }
+        a { color: #667eea; text-decoration: none; }
+        .strength-badge { display: inline-block; padding: 3px 8px; border-radius: 5px; font-size: 11px; margin-left: 10px; }
+        .weak { background: #dc3545; color: white; }
+        .medium { background: #ffc107; color: #333; }
+        .strong { background: #28a745; color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Create Account</h2>
+        <form id="registerForm">
+            <input type="text" id="name" placeholder="Full Name" required>
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <div class="password-requirements">
+                <h4>Password Requirements: <span id="strengthBadge" class="strength-badge weak">Weak</span></h4>
+                <ul id="requirementsList">
+                    <li id="reqLength">At least 8 characters</li>
+                    <li id="reqUpper">At least one uppercase letter (A-Z)</li>
+                    <li id="reqLower">At least one lowercase letter (a-z)</li>
+                    <li id="reqDigit">At least one number (0-9)</li>
+                    <li id="reqSpecial">At least one special character (!@#$%^&*)</li>
+                </ul>
+            </div>
+            <select id="role" required>
+                <option value="user">User</option>
+                <option value="manager">Manager</option>
+                <option value="admin">Admin</option>
+            </select>
+            <div id="errorMsg" class="error-message"></div>
+            <button type="submit">Register</button>
+        </form>
+        <div id="result" class="hidden">
+            <div class="qr-section">
+                <h3>✅ Registration Successful!</h3>
+                <p>Scan with Google Authenticator:</p>
+                <div id="qrImage"></div>
+                <p><small>Secret: <span id="secret"></span></small></p>
+            </div>
+            <div class="login-link">
+                <a href="/">Go to Login</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Password strength checker
+        const passwordInput = document.getElementById('password');
+        const reqLength = document.getElementById('reqLength');
+        const reqUpper = document.getElementById('reqUpper');
+        const reqLower = document.getElementById('reqLower');
+        const reqDigit = document.getElementById('reqDigit');
+        const reqSpecial = document.getElementById('reqSpecial');
+        const strengthBadge = document.getElementById('strengthBadge');
+        
+        function checkPasswordStrength() {
+            const password = passwordInput.value;
+            
+            const checks = {
+                length: password.length >= 8,
+                upper: /[A-Z]/.test(password),
+                lower: /[a-z]/.test(password),
+                digit: /[0-9]/.test(password),
+                special: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)
+            };
+            
+            // Update list items
+            updateRequirement(reqLength, checks.length);
+            updateRequirement(reqUpper, checks.upper);
+            updateRequirement(reqLower, checks.lower);
+            updateRequirement(reqDigit, checks.digit);
+            updateRequirement(reqSpecial, checks.special);
+            
+            // Calculate strength
+            const strength = Object.values(checks).filter(Boolean).length;
+            
+            if (strength === 5) {
+                strengthBadge.className = 'strength-badge strong';
+                strengthBadge.textContent = 'Strong ✓';
+            } else if (strength >= 3) {
+                strengthBadge.className = 'strength-badge medium';
+                strengthBadge.textContent = 'Medium';
+            } else {
+                strengthBadge.className = 'strength-badge weak';
+                strengthBadge.textContent = 'Weak';
+            }
+            
+            return strength === 5;
+        }
+        
+        function updateRequirement(element, isValid) {
+            if (isValid) {
+                element.className = 'valid';
+                element.style.color = '#28a745';
+            } else {
+                element.className = 'invalid';
+                element.style.color = '#dc3545';
+            }
+        }
+        
+        passwordInput.addEventListener('input', checkPasswordStrength);
+        
+        document.getElementById('registerForm').onsubmit = async (e) => {
+            e.preventDefault();
+            
+            const password = document.getElementById('password').value;
+            const isStrong = checkPasswordStrength();
+            
+            if (!isStrong) {
+                document.getElementById('errorMsg').textContent = 'Please meet all password requirements before registering.';
+                document.getElementById('errorMsg').style.display = 'block';
+                return;
+            }
+            
+            document.getElementById('errorMsg').style.display = 'none';
+            
+            const response = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    name: document.getElementById('name').value,
+                    email: document.getElementById('email').value,
+                    password: password,
+                    role: document.getElementById('role').value
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                document.getElementById('qrImage').innerHTML = `<img src="data:image/png;base64,${data.qr_code}">`;
+                document.getElementById('secret').innerText = data.secret;
+                document.getElementById('registerForm').classList.add('hidden');
+                document.getElementById('result').classList.remove('hidden');
+            } else {
+                if (data.requirements) {
+                    alert('Password Requirements:\n- ' + data.requirements.join('\n- '));
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            }
+        };
+    </script>
+</body>
+</html>

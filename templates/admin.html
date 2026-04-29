@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Panel</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial; background: #f0f2f5; }
+        .navbar { background: #e74c3c; color: white; padding: 15px 30px; display: flex; justify-content: space-between; }
+        .container { max-width: 800px; margin: 50px auto; padding: 20px; }
+        .card { background: white; border-radius: 10px; padding: 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .admin-badge { background: #e74c3c; color: white; padding: 5px 10px; border-radius: 5px; display: inline-block; }
+        .back-btn { display: inline-block; margin-top: 20px; padding: 10px 20px; background: #667eea; color: white; text-decoration: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h2><span class="admin-badge">ADMIN</span> Panel</h2>
+        <button onclick="logout()" style="background:#c0392b;color:white;border:none;padding:8px 20px;border-radius:5px;">Logout</button>
+    </div>
+    <div class="container">
+        <div class="card">
+            <h2>🔧 Admin Controls</h2>
+            <div id="adminContent"></div>
+            <a href="/dashboard-page" class="back-btn">← Back to Dashboard</a>
+        </div>
+    </div>
+    <script>
+        const token = localStorage.getItem('token');
+        if (!token) window.location.href = '/';
+        
+        fetch('/api/admin', {
+            headers: { 'Authorization': 'Bearer ' + token }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.message) {
+                document.getElementById('adminContent').innerHTML = `<p style="color:green">✅ ${data.message}</p><p>🔐 Full system administrator access</p>`;
+            } else {
+                document.getElementById('adminContent').innerHTML = `<p style="color:red">❌ Access Denied: ${data.error}</p>`;
+            }
+        });
+        
+        function logout() { localStorage.clear(); window.location.href = '/'; }
+    </script>
+</body>
+</html>

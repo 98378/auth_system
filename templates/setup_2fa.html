@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Setup 2FA</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; justify-content: center; align-items: center; }
+        .container { background: white; border-radius: 10px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); width: 450px; padding: 40px; text-align: center; }
+        .qr-code { margin: 20px 0; }
+        a { display: inline-block; margin-top: 20px; color: #667eea; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>📱 Setup Two-Factor Authentication</h2>
+        <p>Scan this QR code with Google Authenticator</p>
+        <div class="qr-code" id="qrDisplay"></div>
+        <p><strong>Secret Key:</strong> <span id="secretKey"></span></p>
+        <a href="/verify-page">Continue to Verification →</a>
+    </div>
+    <script>
+        const qrData = localStorage.getItem('qr_code');
+        const secret = localStorage.getItem('secret');
+        
+        if (qrData) {
+            document.getElementById('qrDisplay').innerHTML = `<img src="data:image/png;base64,${qrData}">`;
+            document.getElementById('secretKey').innerText = secret;
+        } else {
+            document.getElementById('qrDisplay').innerHTML = '<p>No QR code found. Please register first.</p>';
+        }
+    </script>
+</body>
+</html>

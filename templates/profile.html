@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Profile</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial; background: #f0f2f5; }
+        .navbar { background: #667eea; color: white; padding: 15px 30px; display: flex; justify-content: space-between; }
+        .container { max-width: 800px; margin: 50px auto; padding: 20px; }
+        .card { background: white; border-radius: 10px; padding: 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .back-btn { display: inline-block; margin-top: 20px; padding: 10px 20px; background: #667eea; color: white; text-decoration: none; border-radius: 5px; }
+        .info-item { padding: 10px 0; border-bottom: 1px solid #eee; }
+        .logout-btn { background: #e74c3c; color: white; border: none; padding: 8px 20px; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h2>Profile Page</h2>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+    <div class="container">
+        <div class="card">
+            <h2>👤 User Profile</h2>
+            <div id="profileInfo"></div>
+            <a href="/dashboard-page" class="back-btn">← Back to Dashboard</a>
+        </div>
+    </div>
+    <script>
+        const token = localStorage.getItem('token');
+        if (!token) window.location.href = '/';
+        
+        fetch('/api/profile', {
+            headers: { 'Authorization': 'Bearer ' + token }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.user) {
+                document.getElementById('profileInfo').innerHTML = `
+                    <div class="info-item"><strong>User ID:</strong> ${data.user.user_id}</div>
+                    <div class="info-item"><strong>Email:</strong> ${data.user.email}</div>
+                    <div class="info-item"><strong>Role:</strong> ${data.user.role}</div>
+                    <div class="info-item"><strong>Authenticated:</strong> Yes ✅</div>
+                `;
+            } else {
+                document.getElementById('profileInfo').innerHTML = `<p style="color:red">❌ ${data.error}</p>`;
+            }
+        });
+        
+        function logout() { localStorage.clear(); window.location.href = '/'; }
+    </script>
+</body>
+</html>
