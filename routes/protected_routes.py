@@ -73,7 +73,7 @@ def user_panel():
     }), 200
 
 
-# ========== Profile - Everyone ==========
+# ========== Profile==========
 @protected_bp.route('/profile', methods=['GET'])
 @token_required
 def profile():

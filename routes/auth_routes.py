@@ -18,7 +18,7 @@ def register():
     password = data.get('password')
     role = data.get('role')
     
-    # Validation - All fields required
+    # Validation All fields required
     if not all([name, email, password, role]):
         return jsonify({'error': 'All fields (name, email, password, role) are required'}), 400
     

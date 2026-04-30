@@ -14,7 +14,6 @@ init_db()
 app.register_blueprint(auth_bp, url_prefix='/api/auth')
 app.register_blueprint(protected_bp, url_prefix='/api')
 
-# Page routes
 @app.route('/')
 def login_page():
     return render_template('login.html')

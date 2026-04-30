@@ -1,8 +1,8 @@
 import os
 
 class Config:
-    SECRET_KEY = 'your-super-secret-key-change-in-production-2024'
-    JWT_SECRET = 'jwt-secret-key-change-this-2024'
+    SECRET_KEY = os.environ.get('SECRET_KEY')
+    JWT_SECRET = os.environ.get('JWT_SECRET')
     
     # MySQL Workbench Configuration
     MYSQL_HOST = '127.0.0.1'
